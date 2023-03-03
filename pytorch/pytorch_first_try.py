@@ -29,7 +29,7 @@ from definitions import epsilons_per_feature, vars_per_candidate
 
 glob_vars = vars_per_candidate['glob']
 
-def train_loop(dataloader, nbatches, model, loss_fn, optimizer, device, epoch, epoch_pbar, attack, att_magnitude, restrict_impact, epsilon_factors, acc_loss):
+def train_loop(dataloader, nbatches, model, loss_fn, optimizer, device, epoch, epoch_pbar, attack, att_magnitude, restrict_impact, epsilon_factors, pgd_loops, acc_loss):
     for b in range(nbatches):
         #should not happen unless files are broken (will give additional errors)
         #if dataloader.isEmpty():
@@ -85,7 +85,18 @@ def train_loop(dataloader, nbatches, model, loss_fn, optimizer, device, epoch, e
                                                thismodel=model,
                                                thiscriterion=loss_fn,
                                                restrict_impact=restrict_impact,
-                                               epsilon_factors=epsilon_factors)   
+                                               epsilon_factors=epsilon_factors)
+        elif attack == 'PGD':
+            glob, cpf, npf, vtx = pgd_attack(sample=(glob,cpf,npf,vtx), 
+                                               epsilon=att_magnitude,
+                                               pgd_loops=pgd_loops,
+                                               dev=device,
+                                               targets=y,
+                                               thismodel=model,
+                                               thiscriterion=loss_fn,
+                                               restrict_impact=restrict_impact,
+                                               epsilon_factors=epsilon_factors)
+        
         # Compute prediction and loss
         pred = model(glob,cpf,npf,vtx)
         loss = loss_fn(pred, y.type_as(pred))
@@ -110,10 +121,11 @@ def train_loop(dataloader, nbatches, model, loss_fn, optimizer, device, epoch, e
 
 def val_loop(dataloader, nbatches, model, loss_fn, device, epoch):
     num_batches = nbatches
-    test_loss, correct = 0, 0
+    test_loss, correct, total = 0, 0, 0
  
     with torch.no_grad():
         for b in range(nbatches):
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         #should not happen unless files are broken (will give additional errors)
             #if dataloader.isEmpty():
              #   raise Exception("ran out of data") 
@@ -124,18 +136,23 @@ def val_loop(dataloader, nbatches, model, loss_fn, device, epoch):
             npf = torch.Tensor(features_list[2]).to(device)
             vtx = torch.Tensor(features_list[3]).to(device)
             #pxl = torch.Tensor(features_list[4]).to(device)
-            y = torch.Tensor(truth_list[0]).to(device)    
+            y = torch.Tensor(truth_list[0]).to(device)
+            glob[:,:] = torch.where(glob[:,:] == -999., torch.zeros(len(glob),glob_vars).to(device), glob[:,:])
+            glob[:,:] = torch.where(glob[:,:] ==   -1., torch.zeros(len(glob),glob_vars).to(device), glob[:,:])
             # Compute prediction and loss
             _, labels = y.max(dim=1)
             pred = model(glob,cpf,npf,vtx)
             
+            total += cpf.shape[0]
             test_loss += loss_fn(pred, y.type_as(pred)).item()
+            avg_loss = test_loss / (b + 1)
             correct += (pred.argmax(1) == labels).type(torch.float).sum().item()
  
-    test_loss /= num_batches
-    correct /= (num_batches * cpf[0].shape[0])
-    print(f"Test Error: \n Accuracy: {(100*correct):>0.6f}%, Avg loss: {test_loss:>6f} \n")
-    return test_loss
+    #test_loss /= num_batches
+    #correct /= (num_batches * cpf[0].shape[0])
+    correct /= total
+    print(f"Test Error: \n Accuracy: {(100*correct):>0.6f}%, Avg loss: {avg_loss:>6f} \n")
+    return avg_loss
 
 def cross_entropy_one_hot(input, target):
     _, labels = target.max(dim=1)
@@ -277,7 +294,7 @@ class training_base(object):
         self.val_data.setBatchSize(batchsize)
         
     def trainModel(self, nepochs, batchsize, batchsize_use_sum_of_squares = False, extend_truth_list_by=0,
-                   load_in_mem = False, max_files = -1, plot_batch_loss = False, attack = None, att_magnitude = 0., restrict_impact = -1, **trainargs):
+                   load_in_mem = False, max_files = -1, plot_batch_loss = False, attack = None, att_magnitude = 0., restrict_impact = -1, pgd_loops = -1, **trainargs):
         
         
         #print('Attack:',attack)
@@ -346,7 +363,7 @@ class training_base(object):
                     self.model.train()
                     for param_group in self.optimizer.param_groups:
                         print('/n Learning rate = '+str(param_group['lr'])+' /n')
-                    train_loss = train_loop(train_generator, nbatches_train, self.model, self.criterion, self.optimizer, self.device, self.trainedepoches, epoch_pbar, attack, att_magnitude, restrict_impact, epsilon_factors, acc_loss=0)
+                    train_loss = train_loop(train_generator, nbatches_train, self.model, self.criterion, self.optimizer, self.device, self.trainedepoches, epoch_pbar, attack, att_magnitude, restrict_impact, epsilon_factors, pgd_loops, acc_loss=0)
                     self.scheduler.step()
                 
                     self.model.eval()

@@ -11,15 +11,17 @@ parser.add_argument("-b", help="batch size, overrides the batch size from the tr
 parser.add_argument("--gpu",  help="select specific GPU", metavar="OPT", default="")
 parser.add_argument("--unbuffered", help="do not read input in memory buffered mode (for lower memory consumption on fast disks)", default=False, action="store_true")
 parser.add_argument("--pad_rowsplits", help="pad the row splits if the input is ragged", default=False, action="store_true")
-parser.add_argument("-attack", help="use adversarial attack (Noise|FGSM) or leave blank to use undisturbed features only", default="")
+parser.add_argument("-attack", help="use adversarial attack (Noise|FGSM|PGD) or leave blank to use undisturbed features only", default="")
 parser.add_argument("-att_magnitude", help="distort input features with adversarial attack, using specified magnitude of attack", default="-1")
 parser.add_argument("-restrict_impact", help="limit attack impact to this fraction of the input value (percent-cap on distortion)", default="-1")
+parser.add_argument("-pgd_loops", help="define number of iterations in the PGD attack", default="-1")
 
 args = parser.parse_args()
 batchsize = int(args.b)
 attack = args.attack
 att_magnitude = float(args.att_magnitude)
 restrict_impact = float(args.restrict_impact)
+pgd_loops = int(args.pgd_loops)
 
 import imp
 import numpy as np
@@ -36,7 +38,7 @@ from pytorch_deepjet_run2 import DeepJet_Run2
 from pytorch_deepjet_transformer import DeepJetTransformer
 from torch.optim import Adam, SGD
 from tqdm import tqdm
-from attacks import apply_noise, fgsm_attack
+from attacks import apply_noise, fgsm_attack, pgd_attack
 inputdatafiles=[]
 inputdir=None
 
@@ -48,9 +50,13 @@ def cross_entropy_one_hot(input, target):
     _, labels = target.max(dim=1)
     return nn.CrossEntropyLoss()(input, labels)
 
-def test_loop(dataloader, model, nbatches, pbar, attack = "", att_magnitude = -1., restrict_impact = -1., loss_fn = cross_entropy_one_hot, epsilon_factors=None):
+def test_loop(dataloader, model, nbatches, pbar, attack = "", att_magnitude = -1., restrict_impact = -1., pgd_loops = pgd_loops, loss_fn = cross_entropy_one_hot, epsilon_factors=None):
     predictions = 0
     
+    glob_adv_liste = []
+    cpf_adv_liste = []
+    npf_adv_liste = []
+    vtx_adv_liste = []
     #with torch.no_grad():
     for b in range(nbatches):
 
@@ -102,9 +108,25 @@ def test_loop(dataloader, model, nbatches, pbar, attack = "", att_magnitude = -1
                                                thiscriterion=loss_fn,
                                                restrict_impact=restrict_impact,
                                                epsilon_factors=epsilon_factors)
+        
+        elif attack == 'PGD':
+            #print('Do PGD')
+            glob, cpf, npf, vtx = pgd_attack(sample=(glob,cpf,npf,vtx), 
+                                               epsilon=att_magnitude,
+                                               pgd_loops=pgd_loops,
+                                               dev=device,
+                                               targets=y,
+                                               thismodel=model,
+                                               thiscriterion=loss_fn,
+                                               restrict_impact=restrict_impact,
+                                               epsilon_factors=epsilon_factors)
 
 
 
+        #glob_adv_liste.append(glob.detach().cpu().numpy())
+        #cpf_adv_liste.append(cpf.detach().cpu().numpy())
+        #npf_adv_liste.append(npf.detach().cpu().numpy())
+        #vtx_adv_liste.append(vtx.detach().cpu().numpy())
         # Compute prediction
         pred = nn.Softmax(dim=1)(model(glob,cpf,npf,vtx)).cpu().detach().numpy()
         if b == 0:
@@ -114,7 +136,12 @@ def test_loop(dataloader, model, nbatches, pbar, attack = "", att_magnitude = -1
         desc = 'Predicting probs : '
         pbar.set_description(desc)
         pbar.update(1)
-        
+    
+    #np.save("/eos/home-a/aljung/data/deepjet/one_sample/glob_pgd_new_nonoise.npy", np.asarray(glob_adv_liste))
+    #np.save("/eos/home-a/aljung/data/deepjet/one_sample/cpf_pgd_new_nonoise.npy", np.asarray(cpf_adv_liste))
+    #np.save("/eos/home-a/aljung/data/deepjet/one_sample/npf_pgd_new_nonoise.npy", np.asarray(npf_adv_liste))
+    #np.save("/eos/home-a/aljung/data/deepjet/one_sample/vtx_pgd_new_nonoise.npy", np.asarray(vtx_adv_liste))
+    
     return predictions
 
 ## prepare input lists for different file formats

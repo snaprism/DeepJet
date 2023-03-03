@@ -1,3 +1,4 @@
+import numpy as np
 import torch 
 import torch.nn as nn
 #from DeepJetCore.training.pytorch_first_try import training_base
@@ -7,6 +8,13 @@ from pytorch_deepjet_run2 import *
 from pytorch_deepjet_transformer import DeepJetTransformer
 #from pytorch_deepjet_transformer_v2 import DeepJetTransformerv2
 from pytorch_ranger import Ranger
+
+seed = 0
+np.random.seed(seed)
+torch.manual_seed(seed)
+torch.random.manual_seed(seed)
+if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
 
 def cross_entropy_one_hot(input, target):
     _, labels = target.max(dim=1)
@@ -39,9 +47,11 @@ restrict_impact = -1
 attack = 'FGSM'
 att_magnitude = 0.01
 restrict_impact = -1
+pgd_loops = -1
 
 model,history = train.trainModel(nepochs=num_epochs+lr_epochs, 
                                  batchsize=4000,
                                  attack = attack,
                                  att_magnitude = att_magnitude,
-                                 restrict_impact = restrict_impact)
+                                 restrict_impact = restrict_impact,
+                                 pgd_lopps=pgd_loops)
