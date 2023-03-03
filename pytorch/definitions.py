@@ -23,10 +23,10 @@ defaults_per_variable_before_prepro = {
     #'pxl' : ,
 }
 epsilons_per_feature = {
-    'glob' : '/eos/home-a/aljung/DeepJet/Train_DF_Run2/auxiliary/global_epsilons.npy',
-    'cpf' : '/eos/home-a/aljung/DeepJet/Train_DF_Run2/auxiliary/cpf_epsilons.npy',
-    'npf' : '/eos/home-a/aljung/DeepJet/Train_DF_Run2/auxiliary/npf_epsilons.npy',
-    'vtx' : '/eos/home-a/aljung/DeepJet/Train_DF_Run2/auxiliary/vtx_epsilons.npy',
+    'glob' : '/eos/user/a/aljung/DeepJet/Train_DF_Run2/auxiliary/global_epsilons.npy',
+    'cpf' : '/eos/user/a/aljung/DeepJet/Train_DF_Run2/auxiliary/cpf_epsilons.npy',
+    'npf' : '/eos/user/a/aljung/DeepJet/Train_DF_Run2/auxiliary/npf_epsilons.npy',
+    'vtx' : '/eos/user/a/aljung/DeepJet/Train_DF_Run2/auxiliary/vtx_epsilons.npy',
     #'pxl' : ,
 }
 defaults_per_variable = {
