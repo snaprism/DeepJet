@@ -116,8 +116,112 @@ def train_loop(dataloader, nbatches, model, loss_fn, optimizer, device, epoch, e
         desc = f'Epoch {epoch+1} - loss {avg_loss:.6f}'
         epoch_pbar.set_description(desc)
         epoch_pbar.update(1)
-        
+
     return avg_loss
+
+def train_loop_(scheduler, dataloader, nbatches, model, loss_fn, optimizer, device, epoch, epoch_pbar, attack, att_magnitude, restrict_impact, epsilon_factors, pgd_loops, valgen, nbatches_val, model_, loss_fn_, device_, epoch_, acc_loss):
+    for b in range(nbatches):
+        #should not happen unless files are broken (will give additional errors)
+        #if dataloader.isEmpty():
+         #   raise Exception("ran out of data") 
+            
+        features_list, truth_list = next(dataloader)
+
+        glob = torch.Tensor(features_list[0]).to(device)
+        cpf = torch.Tensor(features_list[1]).to(device)
+        npf = torch.Tensor(features_list[2]).to(device)
+        vtx = torch.Tensor(features_list[3]).to(device)
+        #pxl = torch.Tensor(features_list[4]).to(device)
+        y = torch.Tensor(truth_list[0]).to(device)
+        
+        glob[:,:] = torch.where(glob[:,:] == -999., torch.zeros(len(glob),glob_vars).to(device), glob[:,:])
+        glob[:,:] = torch.where(glob[:,:] ==   -1., torch.zeros(len(glob),glob_vars).to(device), glob[:,:])
+        
+        # apply attack
+        #print('Attack type:',attack)
+        if attack == 'Noise':
+            #print('Do Noise')
+            glob = apply_noise(glob, 
+                               magn=att_magnitude,
+                               offset=[0],
+                               dev=device,
+                               restrict_impact=restrict_impact,
+                               var_group='glob')
+            cpf = apply_noise(cpf, 
+                               magn=att_magnitude,
+                               offset=[0],
+                               dev=device,
+                               restrict_impact=restrict_impact,
+                               var_group='cpf')
+            npf = apply_noise(npf, 
+                               magn=att_magnitude,
+                               offset=[0],
+                               dev=device,
+                               restrict_impact=restrict_impact,
+                               var_group='npf')
+            vtx = apply_noise(vtx, 
+                               magn=att_magnitude,
+                               offset=[0],
+                               dev=device,
+                               restrict_impact=restrict_impact,
+                               var_group='vtx')
+
+        elif attack == 'FGSM':
+            #print('Do FGSM')
+            glob, cpf, npf, vtx = fgsm_attack(sample=(glob,cpf,npf,vtx), 
+                                               epsilon=att_magnitude,
+                                               dev=device,
+                                               targets=y,
+                                               thismodel=model,
+                                               thiscriterion=loss_fn,
+                                               restrict_impact=restrict_impact,
+                                               epsilon_factors=epsilon_factors)
+        elif attack == 'PGD':
+            glob, cpf, npf, vtx = pgd_attack(sample=(glob,cpf,npf,vtx), 
+                                               epsilon=att_magnitude,
+                                               pgd_loops=pgd_loops,
+                                               dev=device,
+                                               targets=y,
+                                               thismodel=model,
+                                               thiscriterion=loss_fn,
+                                               restrict_impact=restrict_impact,
+                                               epsilon_factors=epsilon_factors)
+        
+        # Compute prediction and loss
+        pred = model(glob,cpf,npf,vtx)
+        loss = loss_fn(pred, y.type_as(pred))
+ 
+        # Backpropagation
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        
+        # Add loss to accumulated loss
+        acc_loss += loss.item() # AS [19.05.22]: only the value of the loss function, don't need whole computational graph
+ 
+        # Update progress bar description
+        avg_loss = acc_loss / (b + 1)
+        #if((b % 100) == 0):
+        #    print(f"Training Error: \n batch : {(b):>0.1f} / {(nbatches):>0.1f}, Avg loss: {avg_loss:>6f} \n")
+        desc = f'Epoch {epoch+1} - loss {avg_loss:.6f}'
+        epoch_pbar.set_description(desc)
+        epoch_pbar.update(1)
+        
+        if b==101:
+            break
+            
+        model.eval()
+        valgen.prepareNextEpoch()
+        nbatches_val  = valgen.getNBatches() 
+        val_generator = valgen.feedNumpyData()
+
+        val_loss = val_loop_(val_generator, nbatches_val, model, loss_fn, device, epoch)
+        checkpoint = {'state_dict': model.state_dict(),'optimizer' :optimizer.state_dict(),'epoch': epoch,'scheduler': scheduler.state_dict(),'best_loss': None,'train_loss': avg_loss,'val_loss': val_loss}
+
+        torch.save(checkpoint, '/eos/user/a/aljung/DeepJet/Train_DF_Run2/test/more_batch_checkpoints/checkpoint_epoch_'+str(epoch)+'_batch_'+str(b+1)+'.pth')
+        model.train()
+    return avg_loss
+
 
 def val_loop(dataloader, nbatches, model, loss_fn, device, epoch):
     num_batches = nbatches
@@ -153,6 +257,39 @@ def val_loop(dataloader, nbatches, model, loss_fn, device, epoch):
     correct /= total
     print(f"Test Error: \n Accuracy: {(100*correct):>0.6f}%, Avg loss: {avg_loss:>6f} \n")
     return avg_loss
+
+def val_loop_(dataloader, nbatches, model, loss_fn, device, epoch):
+    num_batches = nbatches
+    test_loss, correct, total = 0, 0, 0
+ 
+    with torch.no_grad():
+        for b, (features_list, truth_list) in enumerate(dataloader):
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        #should not happen unless files are broken (will give additional errors)
+            #if dataloader.isEmpty():
+             #   raise Exception("ran out of data")
+            glob = torch.Tensor(features_list[0]).to(device)
+            cpf = torch.Tensor(features_list[1]).to(device)
+            npf = torch.Tensor(features_list[2]).to(device)
+            vtx = torch.Tensor(features_list[3]).to(device)
+            #pxl = torch.Tensor(features_list[4]).to(device)
+            y = torch.Tensor(truth_list[0]).to(device)
+            glob[:,:] = torch.where(glob[:,:] == -999., torch.zeros(len(glob),glob_vars).to(device), glob[:,:])
+            glob[:,:] = torch.where(glob[:,:] ==   -1., torch.zeros(len(glob),glob_vars).to(device), glob[:,:])
+            # Compute prediction and loss
+            _, labels = y.max(dim=1)
+            pred = model(glob,cpf,npf,vtx)
+            total += cpf.shape[0]
+            test_loss += loss_fn(pred, y.type_as(pred)).item()
+            avg_loss = test_loss / (b + 1)
+            correct += (pred.argmax(1) == labels).type(torch.float).sum().item()
+ 
+    #test_loss /= num_batches
+    #correct /= (num_batches * cpf[0].shape[0])
+    correct /= total
+    print(f"Test Error: \n Accuracy: {(100*correct):>0.6f}%, Avg loss: {avg_loss:>6f} \n")
+    return avg_loss
+
 
 def cross_entropy_one_hot(input, target):
     _, labels = target.max(dim=1)
@@ -364,6 +501,8 @@ class training_base(object):
                     for param_group in self.optimizer.param_groups:
                         print('/n Learning rate = '+str(param_group['lr'])+' /n')
                     train_loss = train_loop(train_generator, nbatches_train, self.model, self.criterion, self.optimizer, self.device, self.trainedepoches, epoch_pbar, attack, att_magnitude, restrict_impact, epsilon_factors, pgd_loops, acc_loss=0)
+                    #train_loss = train_loop_(self.scheduler, train_generator, nbatches_train, self.model, self.criterion, self.optimizer, self.device, self.trainedepoches, epoch_pbar, attack, att_magnitude, restrict_impact, epsilon_factors, pgd_loops, valgen, nbatches_val, self.model, self.criterion, self.device, self.trainedepoches, acc_loss=0)
+                    
                     self.scheduler.step()
                 
                     self.model.eval()

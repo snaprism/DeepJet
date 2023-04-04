@@ -31,7 +31,8 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.to(device)
 
 criterion = cross_entropy_one_hot
-optimizer = Ranger(model.parameters(), lr = 5e-3) #torch.optim.Adam(model.parameters(), lr = 0.003, eps = 1e-07)
+#optimizer = Ranger(model.parameters(), lr = 5e-3)
+optimizer = torch.optim.Adam(model.parameters(), lr = 0.003, eps = 1e-07)
 #scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones = [1], gamma = 0.1)
 scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones = mil, gamma = lr_rate)
 

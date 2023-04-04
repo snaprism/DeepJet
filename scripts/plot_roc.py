@@ -26,7 +26,7 @@ print("finish import")
 #model_name = 'nominal_bsize4k'
 model_name = 'nominal_seed_0'
 #model_name = 'adversarial_eps0p01_bsize10k'
-prediction_setup = '_pgd'
+prediction_setup = ''
 #prediction_files = 'one_prediction'
 prediction_files = 'outfiles'
 
@@ -61,7 +61,8 @@ else:
     
 
 #dirz = f'/eos/user/a/anstein/DeepJet/Train_DF/{model_name}/predict{prediction_setup}/'
-dirz = f'/eos/user/a/aljung/DeepJet/Train_DF_Run2/new_data/{model_name}/predict{prediction_setup}/'
+#dirz = f'/eos/user/a/aljung/DeepJet/Train_DF_Run2/new_data/{model_name}/predict{prediction_setup}/'
+dirz = f'/eos/user/a/aljung/DeepJet/Train_DF_Run2/test/'
 truthfile = open( dirz+prediction_files+'.txt','r')
 
 config_name = model_name + prediction_setup + '_' + prediction_files

@@ -9,11 +9,11 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 #model_names = ['nominal_with_etarel_phirel', 'adversarial_with_etarel_phirel']
 # Run2
 #model_names = ['nominal', 'adversarial_eps0p01','adversarial_eps0p005','adversarial_eps0p005_bsize100k']
-model_names = 'nominal_seed_0'
+model_names = 'adam'
 tagger = 'DF_Run2' #'DF'
 #dirz = [f'/eos/home-a/a/aljung/DeepJet/Train_{tagger}/{model_names}/' \
 #        for model_name in model_names]
-dirz = [f'/eos/user/a/aljung/DeepJet/Train_{tagger}/new_data/{model_names}/']
+dirz = [f'/eos/user/a/aljung/DeepJet/Train_{tagger}/{model_names}/']
 
 nominal_epochs = 39
 adversarial_epochsA = 73#39

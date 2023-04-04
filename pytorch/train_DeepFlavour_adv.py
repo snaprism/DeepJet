@@ -44,10 +44,10 @@ attack = None
 att_magnitude = 0.
 restrict_impact = -1
 '''
-attack = 'FGSM'
+attack = 'PGD'
 att_magnitude = 0.01
 restrict_impact = -1
-pgd_loops = -1
+pgd_loops = 5
 
 model,history = train.trainModel(nepochs=num_epochs+lr_epochs, 
                                  batchsize=4000,
