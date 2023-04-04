@@ -22,12 +22,19 @@ defaults_per_variable_before_prepro = {
     'vtx' : [0 for i in range(vars_per_candidate['vtx'])],
     #'pxl' : ,
 }
+# lxplus
+#epsilons_per_feature = {
+#    'glob' : '/eos/user/a/aljung/DeepJet/Train_DF_Run2/auxiliary/new_global_epsilons.npy',
+#    'cpf' : '/eos/user/a/aljung/DeepJet/Train_DF_Run2/auxiliary/new_cpf_epsilons.npy',
+#    'npf' : '/eos/user/a/aljung/DeepJet/Train_DF_Run2/auxiliary/new_npf_epsilons.npy',
+#    'vtx' : '/eos/user/a/aljung/DeepJet/Train_DF_Run2/auxiliary/new_vtx_epsilons.npy'
+#}
+# claix
 epsilons_per_feature = {
-    'glob' : '/eos/user/a/aljung/DeepJet/Train_DF_Run2/auxiliary/global_epsilons.npy',
-    'cpf' : '/eos/user/a/aljung/DeepJet/Train_DF_Run2/auxiliary/cpf_epsilons.npy',
-    'npf' : '/eos/user/a/aljung/DeepJet/Train_DF_Run2/auxiliary/npf_epsilons.npy',
-    'vtx' : '/eos/user/a/aljung/DeepJet/Train_DF_Run2/auxiliary/vtx_epsilons.npy',
-    #'pxl' : ,
+    'glob' : '/hpcwork/rwth1244/pj214607/deepjet/auxiliary/new_global_epsilons.npy',
+    'cpf' : '/hpcwork/rwth1244/pj214607/deepjet/auxiliary/new_cpf_epsilons.npy',
+    'npf' : '/hpcwork/rwth1244/pj214607/deepjet/auxiliary/new_npf_epsilons.npy',
+    'vtx' : '/hpcwork/rwth1244/pj214607/deepjet/auxiliary/new_vtx_epsilons.npy'
 }
 defaults_per_variable = {
     'glob' : [0 for i in range(vars_per_candidate['glob'])],

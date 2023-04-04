@@ -1,16 +1,11 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-
-
-## to call it from cammand lines
 import sys
 import os
 from argparse import ArgumentParser
 import shutil
 from DeepJetCore.DataCollection import DataCollection
-#from DeepJetCore.dataPipeline import TrainDataGenerator
-#from DeepJetCore.compiledc_trainDataGenerator import trainDataGenerator
 from DeepJetCore.DJCLosses import *
 from DeepJetCore.DJCLayers import *
 from pdb import set_trace
@@ -21,9 +16,7 @@ import torch.nn.functional as F
 from torch.optim import Adam, SGD
 from tqdm import tqdm
 import copy
-
 import imp
-
 from attacks import *
 from definitions import epsilons_per_feature, vars_per_candidate
 
