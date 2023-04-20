@@ -12,7 +12,7 @@ import ROOT
 import uproot as u
 import numpy.lib.recfunctions as rf
 
-predictions = ["pgd_loops/1/predict/", "pgd_loops/1/predict_pgd_1/", "pgd_loops/2/predict/", "pgd_loops/2/predict_pgd_2/", "pgd_loops/3/predict/", "pgd_loops/3/predict_pgd_3/", "pgd_loops/4/predict/", "pgd_loops/4/predict_pgd_4/", "pgd_loops/5/predict/", "pgd_loops/5/predict_pgd_5/"]
+predictions = ["nominal/predict/", "nominal/predict_pgd_1/", "nominal/predict_pgd_2/", "nominal/predict_pgd_3/", "nominal/predict_pgd_4/", "nominal/predict_pgd_5/", "pgd_loops/1/predict/", "pgd_loops/1/predict_pgd_1/", "pgd_loops/2/predict/", "pgd_loops/2/predict_pgd_2/", "pgd_loops/3/predict/", "pgd_loops/3/predict_pgd_3/", "pgd_loops/4/predict/", "pgd_loops/4/predict_pgd_4/", "pgd_loops/5/predict/", "pgd_loops/5/predict_pgd_5/"]
 
 def save_roc(prediction_path):
     base_dir         = "/hpcwork/pj214607/work/promotion/deepjet/results/"
@@ -32,7 +32,7 @@ def save_roc(prediction_path):
         auc_                = auc(clean.fpr, clean.tpr)
         print("AUC: ", str(auc_))
         print("\n")
-        return clean.tpr, clean.fpr, auc_
+        return clean.tpr, clean.fpr, auc_ * np.ones(np.shape(clean.tpr))
     
     for j,output in enumerate(output_dirs):
         nparray  = rf.structured_to_unstructured(np.array(np.load(output + "pred_ntuple_merged_342.npy")))
@@ -58,8 +58,8 @@ def save_roc(prediction_path):
         x2, y2, auc2 = spit_out_roc(cvsb,c_jets,veto_udsg)
         x3, y3, auc3 = spit_out_roc(cvsl,c_jets,veto_b)
         
-        np.save(output + "BvL.npy", np.array([x1,y1,auc1], dtype=object))
-        np.save(output + "CvB.npy", np.array([x2,y2,auc2], dtype=object))
-        np.save(output + "CvL.npy", np.array([x3,y3,auc3], dtype=object))
+        np.save(output + "BvL.npy", np.stack((x1, y1, auc1)))
+        np.save(output + "CvB.npy", np.stack((x2, y2, auc2)))
+        np.save(output + "CvL.npy", np.stack((x3, y3, auc3)))
         
 save_roc(predictions)
