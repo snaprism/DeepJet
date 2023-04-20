@@ -1,8 +1,7 @@
 #!/usr/bin/zsh
 
 #SBATCH --account=rwth1244
-#SBATCH --gres=gpu:1
-#SBATCH --job-name=DeepJet
+#SBATCH --job-name=Evaluation
 #SBATCH --mail-user=alexander.jung@rwth-aachen.de
 #SBATCH --mail-type=END
 #SBATCH --mem=10G

@@ -4,7 +4,6 @@ print("finish import")
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-
 # Run3 setup:
 #model_names = ['nominal_with_etarel_phirel', 'adversarial_with_etarel_phirel']
 # Run2
