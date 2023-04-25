@@ -3,8 +3,8 @@ import torch
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-models = ["nominal/", "pgd_loops/1/", "pgd_loops/2/", "pgd_loops/3/", "pgd_loops/4/", "pgd_loops/5/"]
-adv    = [False, True, True, True, True, True]
+models = ["fgsm/"]
+adv    = [True]
 
 
 def save_loss(model_names, is_adv):

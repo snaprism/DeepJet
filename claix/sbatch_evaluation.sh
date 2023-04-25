@@ -1,14 +1,13 @@
 #!/usr/bin/zsh
 
 #SBATCH --account=rwth1244
+#SBATCH --gres=gpu:1
 #SBATCH --job-name=Evaluation
 #SBATCH --mail-user=alexander.jung@rwth-aachen.de
 #SBATCH --mail-type=END
 #SBATCH --mem=10G
 #SBATCH --output=/hpcwork/pj214607/work/promotion/deepjet/logs/output_%J.txt
-#SBATCH --time=0-00:20:00
-
-###for training: #SBATCH --time=0-48:00:00, for prediction: #SBATCH --time=0-00:20:00
+#SBATCH --time=0-00:30:00
 
 module purge
 module restore deepjet

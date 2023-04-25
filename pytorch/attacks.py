@@ -198,8 +198,8 @@ def pgd_attack(epsilon=1e-2, pgd_loops=-1, sample=None, targets=None, thismodel=
     dx_npf  = 0
     dx_vtx  = 0
     for k in range(pgd_loops):
-        #if False:
-        if k%2==0:
+        if False:
+        #if k%2==0:
             glob_adv = apply_noise(glob_adv, magn=1e-2, offset=[0], dev=torch.device("cuda"), restrict_impact=-1, var_group="glob")
             cpf_adv  = apply_noise(cpf_adv, magn=1e-2, offset=[0], dev=torch.device("cuda"), restrict_impact=-1, var_group="cpf")
             npf_adv  = apply_noise(npf_adv, magn=1e-2, offset=[0], dev=torch.device("cuda"), restrict_impact=-1, var_group="npf")

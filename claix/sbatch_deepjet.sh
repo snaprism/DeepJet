@@ -7,9 +7,7 @@
 #SBATCH --mail-type=END
 #SBATCH --mem=10G
 #SBATCH --output=/hpcwork/pj214607/work/promotion/deepjet/logs/output_%J.txt
-#SBATCH --time=0-48:00:00
-
-###for training: #SBATCH --time=0-48:00:00, for prediction and evaluation: #SBATCH --time=0-00:20:00
+#SBATCH --time=0-50:00:00
 
 module purge
 module restore deepjet

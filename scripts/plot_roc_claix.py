@@ -12,7 +12,7 @@ import ROOT
 import uproot as u
 import numpy.lib.recfunctions as rf
 
-predictions = ["nominal/predict/", "nominal/predict_pgd_1/", "nominal/predict_pgd_2/", "nominal/predict_pgd_3/", "nominal/predict_pgd_4/", "nominal/predict_pgd_5/", "pgd_loops/1/predict/", "pgd_loops/1/predict_pgd_1/", "pgd_loops/2/predict/", "pgd_loops/2/predict_pgd_2/", "pgd_loops/3/predict/", "pgd_loops/3/predict_pgd_3/", "pgd_loops/4/predict/", "pgd_loops/4/predict_pgd_4/", "pgd_loops/5/predict/", "pgd_loops/5/predict_pgd_5/"]
+predictions = ["nominal/predict_fgsm/"]
 
 def save_roc(prediction_path):
     base_dir         = "/hpcwork/pj214607/work/promotion/deepjet/results/"
