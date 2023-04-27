@@ -30,12 +30,20 @@ defaults_per_variable_before_prepro = {
 #    'vtx' : '/eos/user/a/aljung/DeepJet/Train_DF_Run2/auxiliary/new_vtx_epsilons.npy'
 #}
 # claix
+#epsilons_per_feature = {
+#    'glob' : '/hpcwork/rwth1244/pj214607/deepjet/auxiliary/new_global_epsilons.npy',
+#    'cpf' : '/hpcwork/rwth1244/pj214607/deepjet/auxiliary/new_cpf_epsilons.npy',
+#    'npf' : '/hpcwork/rwth1244/pj214607/deepjet/auxiliary/new_npf_epsilons.npy',
+#    'vtx' : '/hpcwork/rwth1244/pj214607/deepjet/auxiliary/new_vtx_epsilons.npy'
+#}
+# lxportal
 epsilons_per_feature = {
-    'glob' : '/hpcwork/rwth1244/pj214607/deepjet/auxiliary/new_global_epsilons.npy',
-    'cpf' : '/hpcwork/rwth1244/pj214607/deepjet/auxiliary/new_cpf_epsilons.npy',
-    'npf' : '/hpcwork/rwth1244/pj214607/deepjet/auxiliary/new_npf_epsilons.npy',
-    'vtx' : '/hpcwork/rwth1244/pj214607/deepjet/auxiliary/new_vtx_epsilons.npy'
+    'glob' : '/net/scratch_cms3a/ajung/deepjet/auxiliary/new_global_epsilons.npy',
+    'cpf' : '/net/scratch_cms3a/ajung/deepjet/auxiliary/new_cpf_epsilons.npy',
+    'npf' : '/net/scratch_cms3a/ajung/deepjet/auxiliary/new_npf_epsilons.npy',
+    'vtx' : '/net/scratch_cms3a/ajung/deepjet/auxiliary/new_vtx_epsilons.npy'
 }
+
 defaults_per_variable = {
     'glob' : [0 for i in range(vars_per_candidate['glob'])],
     'cpf' : [0 for i in range(vars_per_candidate['cpf'])],
