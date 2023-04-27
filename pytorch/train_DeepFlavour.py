@@ -8,7 +8,7 @@ from pytorch_deepjet_run2 import *
 from pytorch_deepjet_transformer import DeepJetTransformer
 from pytorch_ranger import Ranger
 
-print("This process has the PID", os.getpid(), ".")
+print(f"This process has the PID {os.getpid()} .")
 
 seed = 0
 np.random.seed(seed)
@@ -21,7 +21,7 @@ def cross_entropy_one_hot(input, target):
     _, labels = target.max(dim=1)
     return nn.CrossEntropyLoss()(input, labels)
 
-num_epochs = 1 #30
+num_epochs = 2 #30
 
 lr_epochs = max(1, int(num_epochs * 0.3))
 lr_rate = 0.01 ** (1.0 / lr_epochs)
@@ -48,4 +48,5 @@ model,history = train.trainModel(nepochs=num_epochs+lr_epochs,
                                  batchsize=4000,
                                  attack = attack,
                                  att_magnitude = att_magnitude,
-                                 restrict_impact = restrict_impact)
+                                 restrict_impact = restrict_impact,
+                                 load_in_mem=True)
