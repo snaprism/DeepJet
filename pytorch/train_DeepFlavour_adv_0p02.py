@@ -1,3 +1,4 @@
+import os
 import torch 
 import torch.nn as nn
 #from DeepJetCore.training.pytorch_first_try import training_base
@@ -7,6 +8,8 @@ from pytorch_deepjet_run2 import *
 from pytorch_deepjet_transformer import DeepJetTransformer
 #from pytorch_deepjet_transformer_v2 import DeepJetTransformerv2
 from pytorch_ranger import Ranger
+
+print(f"This process has the PID {os.getpid()} .")
 
 def cross_entropy_one_hot(input, target):
     _, labels = target.max(dim=1)

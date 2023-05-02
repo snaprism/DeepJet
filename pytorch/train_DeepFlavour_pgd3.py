@@ -1,11 +1,14 @@
-import numpy as np
-import torch 
-import torch.nn as nn
-from pytorch_first_try import training_base
-from pytorch_deepjet import *
-from pytorch_deepjet_run2 import *
 from pytorch_deepjet_transformer import DeepJetTransformer
+from pytorch_first_try import training_base
+from pytorch_deepjet_run2 import *
 from pytorch_ranger import Ranger
+from pytorch_deepjet import *
+import torch.nn as nn
+import numpy as np
+import torch
+import os
+
+print(f"This process has the PID {os.getpid()} .")
 
 seed = 0
 np.random.seed(seed)

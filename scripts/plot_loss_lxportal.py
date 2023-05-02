@@ -11,7 +11,7 @@ adv    = [True]
 
 
 def save_loss(model_names, is_adv):
-    base_dir = "/hpcwork/pj214607/work/promotion/deepjet/results/"
+    base_dir = "/net/scratch_cms3a/ajung/deepjet/results/"
     
     for i,name in enumerate(model_names):
         if is_adv[i]:

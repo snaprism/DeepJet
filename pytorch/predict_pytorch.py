@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 from argparse import ArgumentParser
 
 parser = ArgumentParser('Apply a model to a (test) source sample.')
@@ -43,6 +44,8 @@ inputdatafiles=[]
 inputdir=None
 
 from definitions import epsilons_per_feature, vars_per_candidate
+
+print(f"This process has the PID {os.getpid()} .")
 
 glob_vars = vars_per_candidate['glob']
 

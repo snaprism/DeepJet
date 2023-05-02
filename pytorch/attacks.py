@@ -188,10 +188,21 @@ def pgd_attack(epsilon=1e-2, pgd_loops=-1, sample=None, targets=None, thismodel=
     eps_fac = {"glob": eps_glob, "cpf": eps_cpf, "npf": eps_npf, "vtx": eps_vtx}
     
     glob, cpf, npf, vtx = sample
-    glob_adv = glob.clone()
-    cpf_adv  = cpf.clone()
-    npf_adv  = npf.clone()
-    vtx_adv  = vtx.clone()
+    
+    glob_adv = glob.clone().detach()
+    cpf_adv  = cpf.clone().detach()
+    npf_adv  = npf.clone().detach()
+    vtx_adv  = vtx.clone().detach()
+
+    glob_adv.requires_grad = True
+    cpf_adv.requires_grad  = True
+    npf_adv.requires_grad  = True
+    vtx_adv.requires_grad  = True
+    
+    #glob_adv = glob.clone()
+    #cpf_adv  = cpf.clone()
+    #npf_adv  = npf.clone()
+    #vtx_adv  = vtx.clone()
     
     dx_glob = 0
     dx_cpf  = 0
@@ -224,72 +235,73 @@ def pgd_attack(epsilon=1e-2, pgd_loops=-1, sample=None, targets=None, thismodel=
         dx_npf  += dx_npf_
         dx_vtx  += dx_vtx_
 
-    if reduced:
-        for i in range(vars_per_candidate['glob']):
-            if i in integer_variables_by_candidate['glob']: #don't change integer variables
-                glob_adv[:,i] = glob[:,i]
-            else: # non integer, but might have defaults that should be excluded from shift
-                defaults_glob = glob[:,i].cpu() == defaults_per_variable['glob'][i]
-                if torch.sum(defaults_glob) != 0: #don't change default varibles
-                    glob_adv[:,i][defaults_glob] = glob[:,i][defaults_glob]
-
-                if restrict_impact > 0:
-                    difference = glob_adv[:,i] - glob[:,i]
-                    allowed_perturbation = restrict_impact * torch.abs(glob[:,i])
-                    high_impact = torch.abs(difference) > allowed_perturbation
-
-                    if torch.sum(high_impact)!=0:
-                        glob_adv[high_impact,i] = glob[high_impact,i] + allowed_perturbation[high_impact] * dx_glob[high_impact,i]
-
-        for j in range(cands_per_variable['cpf']):
-            for i in range(vars_per_candidate['cpf']):
-                if i in integer_variables_by_candidate['cpf']:
-                    cpf_adv[:,j,i] = cpf[:,j,i]
-                else:
-                    defaults_cpf = cpf[:,j,i].cpu() == defaults_per_variable['cpf'][i]
-                    if torch.sum(defaults_cpf) != 0:
-                        cpf_adv[:,j,i][defaults_cpf] = cpf[:,j,i][defaults_cpf]
+    with torch.no_grad():
+        if reduced:
+            for i in range(vars_per_candidate["glob"]):
+                if i in integer_variables_by_candidate["glob"]: #don't change integer variables
+                    glob_adv[:,i] = glob[:,i]
+                else: # non integer, but might have defaults that should be excluded from shift
+                    defaults_glob = glob[:,i].cpu() == defaults_per_variable["glob"][i]
+                    if torch.sum(defaults_glob) != 0: #don't change default varibles
+                        glob_adv[:,i][defaults_glob] = glob[:,i][defaults_glob]
 
                     if restrict_impact > 0:
-                        difference = cpf_adv[:,j,i] - cpf[:,j,i]
-                        allowed_perturbation = restrict_impact * torch.abs(cpf[:,j,i])
+                        difference = glob_adv[:,i] - glob[:,i]
+                        allowed_perturbation = restrict_impact * torch.abs(glob[:,i])
                         high_impact = torch.abs(difference) > allowed_perturbation
 
                         if torch.sum(high_impact)!=0:
-                            cpf_adv[high_impact,j,i] = cpf[high_impact,j,i] + allowed_perturbation[high_impact] * dx_cpf[high_impact,j,i]        
+                            glob_adv[high_impact,i] = glob[high_impact,i] + allowed_perturbation[high_impact] * dx_glob[high_impact,i]
 
-        for j in range(cands_per_variable['npf']):
-            for i in range(vars_per_candidate['npf']):
-                if i in integer_variables_by_candidate['npf']:
-                    npf_adv[:,j,i] = npf[:,j,i]
-                else:
-                    defaults_npf = npf[:,j,i].cpu() == defaults_per_variable['npf'][i]
-                    if torch.sum(defaults_npf) != 0:
-                        npf_adv[:,j,i][defaults_npf] = npf[:,j,i][defaults_npf]
+            for j in range(cands_per_variable["cpf"]):
+                for i in range(vars_per_candidate["cpf"]):
+                    if i in integer_variables_by_candidate["cpf"]:
+                        cpf_adv[:,j,i] = cpf[:,j,i]
+                    else:
+                        defaults_cpf = cpf[:,j,i].cpu() == defaults_per_variable["cpf"][i]
+                        if torch.sum(defaults_cpf) != 0:
+                            cpf_adv[:,j,i][defaults_cpf] = cpf[:,j,i][defaults_cpf]
 
-                    if restrict_impact > 0:
-                        difference = npf_adv[:,j,i] - npf[:,j,i]
-                        allowed_perturbation = restrict_impact * torch.abs(npf[:,j,i])
-                        high_impact = torch.abs(difference) > allowed_perturbation
+                        if restrict_impact > 0:
+                            difference = cpf_adv[:,j,i] - cpf[:,j,i]
+                            allowed_perturbation = restrict_impact * torch.abs(cpf[:,j,i])
+                            high_impact = torch.abs(difference) > allowed_perturbation
 
-                        if torch.sum(high_impact)!=0:
-                            npf_adv[high_impact,j,i] = npf[high_impact,j,i] + allowed_perturbation[high_impact] * dx_npf[high_impact,j,i]   
+                            if torch.sum(high_impact)!=0:
+                                cpf_adv[high_impact,j,i] = cpf[high_impact,j,i] + allowed_perturbation[high_impact] * dx_cpf[high_impact,j,i]        
 
-        for j in range(cands_per_variable['vtx']):
-            for i in range(vars_per_candidate['vtx']):
-                if i in integer_variables_by_candidate['vtx']:
-                    vtx_adv[:,j,i] = vtx[:,j,i]
-                else:
-                    defaults_vtx = vtx[:,j,i].cpu() == defaults_per_variable['vtx'][i]
-                    if torch.sum(defaults_vtx) != 0:
-                        vtx_adv[:,j,i][defaults_vtx] = vtx[:,j,i][defaults_vtx]
+            for j in range(cands_per_variable["npf"]):
+                for i in range(vars_per_candidate["npf"]):
+                    if i in integer_variables_by_candidate["npf"]:
+                        npf_adv[:,j,i] = npf[:,j,i]
+                    else:
+                        defaults_npf = npf[:,j,i].cpu() == defaults_per_variable["npf"][i]
+                        if torch.sum(defaults_npf) != 0:
+                            npf_adv[:,j,i][defaults_npf] = npf[:,j,i][defaults_npf]
 
-                    if restrict_impact > 0:
-                        difference = vtx_adv[:,j,i] - vtx[:,j,i]
-                        allowed_perturbation = restrict_impact * torch.abs(vtx[:,j,i])
-                        high_impact = torch.abs(difference) > allowed_perturbation
+                        if restrict_impact > 0:
+                            difference = npf_adv[:,j,i] - npf[:,j,i]
+                            allowed_perturbation = restrict_impact * torch.abs(npf[:,j,i])
+                            high_impact = torch.abs(difference) > allowed_perturbation
 
-                        if torch.sum(high_impact)!=0:
-                            vtx_adv[high_impact,j,i] = vtx[high_impact,j,i] + allowed_perturbation[high_impact] * dx_vtx[high_impact,j,i]   
+                            if torch.sum(high_impact)!=0:
+                                npf_adv[high_impact,j,i] = npf[high_impact,j,i] + allowed_perturbation[high_impact] * dx_npf[high_impact,j,i]   
+
+            for j in range(cands_per_variable["vtx"]):
+                for i in range(vars_per_candidate["vtx"]):
+                    if i in integer_variables_by_candidate["vtx"]:
+                        vtx_adv[:,j,i] = vtx[:,j,i]
+                    else:
+                        defaults_vtx = vtx[:,j,i].cpu() == defaults_per_variable["vtx"][i]
+                        if torch.sum(defaults_vtx) != 0:
+                            vtx_adv[:,j,i][defaults_vtx] = vtx[:,j,i][defaults_vtx]
+
+                        if restrict_impact > 0:
+                            difference = vtx_adv[:,j,i] - vtx[:,j,i]
+                            allowed_perturbation = restrict_impact * torch.abs(vtx[:,j,i])
+                            high_impact = torch.abs(difference) > allowed_perturbation
+
+                            if torch.sum(high_impact)!=0:
+                                vtx_adv[high_impact,j,i] = vtx[high_impact,j,i] + allowed_perturbation[high_impact] * dx_vtx[high_impact,j,i]   
     
-    return glob_adv, cpf_adv, npf_adv, vtx_adv
+    return glob_adv.detach(), cpf_adv.detach(), npf_adv.detach(), vtx_adv.detach()
