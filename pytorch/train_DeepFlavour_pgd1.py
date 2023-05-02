@@ -54,4 +54,4 @@ model,history = train.trainModel(nepochs=num_epochs+lr_epochs,
                                  attack = attack,
                                  att_magnitude = att_magnitude,
                                  restrict_impact = restrict_impact,
-                                 pgd_lopps=pgd_loops)
+                                 pgd_loops=pgd_loops)

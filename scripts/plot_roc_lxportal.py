@@ -4,11 +4,9 @@ import pandas as pd
 import numpy as np
 import os
 
-matplotlib.use("Agg")
-
 print(f"This process has the PID {os.getpid()} .")
 
-predictions = ["test/predict_test_nominal_epoch_12/", "test/predict_fgsm_nominal_epoch_12/"]
+predictions = ["new_pgd/pgd_model/", "new_pgd/fgsm_model/"]
 
 def save_roc(prediction_path):
     base_dir         = "/net/scratch_cms3a/ajung/deepjet/results/"
