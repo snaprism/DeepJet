@@ -6,7 +6,7 @@ import os
 
 print(f"This process has the PID {os.getpid()} .")
 
-predictions = ["new_pgd/pgd_model/", "new_pgd/fgsm_model/"]
+predictions = ["new_nominal/nominal_model/", "new_pgd_/pgd_model/", "new_fgsm_/fgsm_model/"]
 
 def save_roc(prediction_path):
     base_dir         = "/net/scratch_cms3a/ajung/deepjet/results/"

@@ -5,6 +5,13 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
+seed = 0
+np.random.seed(seed)
+torch.manual_seed(seed)
+torch.random.manual_seed(seed)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed(seed)
+
 class hessian():
     """
     The class used to compute :

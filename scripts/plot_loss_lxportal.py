@@ -6,8 +6,8 @@ print(f"This process has the PID {os.getpid()} .")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-models = ["fgsm/"]
-adv    = [True]
+models = ["new_nominal/", "new_fgsm_/", "new_pgd_/"]
+adv    = [False, True, True]
 
 
 def save_loss(model_names, is_adv):

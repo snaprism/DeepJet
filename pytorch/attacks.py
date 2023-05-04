@@ -2,6 +2,13 @@ from definitions import *
 import torch
 import numpy as np
 
+seed = 0
+np.random.seed(seed)
+torch.manual_seed(seed)
+torch.random.manual_seed(seed)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed(seed)
+
 def apply_noise(sample, magn=1e-2, offset=[0], dev=torch.device("cuda"), restrict_impact=-1, var_group="glob"):
     if magn == 0:
         return sample
@@ -58,10 +65,10 @@ def fgsm_attack(epsilon=1e-2,sample=None,targets=None,thismodel=None,thiscriteri
         return sample
     
     if epsilon_factors:
-        eps_glob = torch.from_numpy(np.load(epsilons_per_feature["glob"])).cuda()
-        eps_cpf  = torch.from_numpy(np.transpose(np.load(epsilons_per_feature["cpf"]))).cuda()
-        eps_npf  = torch.from_numpy(np.transpose(np.load(epsilons_per_feature["npf"]))).cuda()
-        eps_vtx  = torch.from_numpy(np.transpose(np.load(epsilons_per_feature["vtx"]))).cuda()
+        eps_glob = torch.from_numpy(np.load(epsilons_per_feature["glob"])).to(dev)
+        eps_cpf  = torch.from_numpy(np.transpose(np.load(epsilons_per_feature["cpf"]))).to(dev)
+        eps_npf  = torch.from_numpy(np.transpose(np.load(epsilons_per_feature["npf"]))).to(dev)
+        eps_vtx  = torch.from_numpy(np.transpose(np.load(epsilons_per_feature["vtx"]))).to(dev)
     else:
         eps_glob = 1.0
         eps_cpf  = 1.0
@@ -71,17 +78,21 @@ def fgsm_attack(epsilon=1e-2,sample=None,targets=None,thismodel=None,thiscriteri
 
     glob, cpf, npf, vtx = sample
     
-    xadv_glob = glob.clone().detach()
-    xadv_cpf  = cpf.clone().detach()
-    xadv_npf  = npf.clone().detach()
-    xadv_vtx  = vtx.clone().detach()
+    #xadv_glob = glob.clone().detach()
+    #xadv_cpf  = cpf.clone().detach()
+    #xadv_npf  = npf.clone().detach()
+    #xadv_vtx  = vtx.clone().detach()
+    xadv_glob = glob.clone().detach().to(dev)
+    xadv_cpf  = cpf.clone().detach().to(dev)
+    xadv_npf  = npf.clone().detach().to(dev)
+    xadv_vtx  = vtx.clone().detach().to(dev)
 
     xadv_glob.requires_grad = True
     xadv_cpf.requires_grad  = True
     xadv_npf.requires_grad  = True
     xadv_vtx.requires_grad  = True
 
-    preds = thismodel(xadv_glob,xadv_cpf,xadv_npf,xadv_vtx)
+    preds = thismodel(xadv_glob, xadv_cpf, xadv_npf, xadv_vtx)
 
     loss = thiscriterion(preds, targets)
 
@@ -89,10 +100,14 @@ def fgsm_attack(epsilon=1e-2,sample=None,targets=None,thismodel=None,thiscriteri
     loss.backward()
 
     with torch.no_grad():
-        dx_glob = torch.sign(xadv_glob.grad.detach())
-        dx_cpf  = torch.sign(xadv_cpf.grad.detach())
-        dx_npf  = torch.sign(xadv_npf.grad.detach())
-        dx_vtx  = torch.sign(xadv_vtx.grad.detach())
+        #dx_glob = torch.sign(xadv_glob.grad.detach())
+        #dx_cpf  = torch.sign(xadv_cpf.grad.detach())
+        #dx_npf  = torch.sign(xadv_npf.grad.detach())
+        #dx_vtx  = torch.sign(xadv_vtx.grad.detach())
+        dx_glob = xadv_glob.grad.detach().sign()
+        dx_cpf  = xadv_cpf.grad.detach().sign()
+        dx_npf  = xadv_npf.grad.detach().sign()
+        dx_vtx  = xadv_vtx.grad.detach().sign()
 
         xadv_glob += epsilon * epsilon_factors['glob'] * dx_glob
         xadv_cpf  += epsilon * epsilon_factors['cpf']  * dx_cpf

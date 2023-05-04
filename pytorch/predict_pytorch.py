@@ -45,6 +45,13 @@ inputdir=None
 
 from definitions import epsilons_per_feature, vars_per_candidate
 
+seed = 0
+np.random.seed(seed)
+torch.manual_seed(seed)
+torch.random.manual_seed(seed)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed(seed)
+
 print(f"This process has the PID {os.getpid()} .")
 
 glob_vars = vars_per_candidate['glob']

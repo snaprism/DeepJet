@@ -20,6 +20,13 @@ import imp
 from attacks import *
 from definitions import epsilons_per_feature, vars_per_candidate
 
+seed = 0
+np.random.seed(seed)
+torch.manual_seed(seed)
+torch.random.manual_seed(seed)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed(seed)
+
 glob_vars = vars_per_candidate['glob']
 
 def train_loop(dataloader, nbatches, model, loss_fn, optimizer, device, epoch, epoch_pbar, attack, att_magnitude, restrict_impact, epsilon_factors, pgd_loops, acc_loss):

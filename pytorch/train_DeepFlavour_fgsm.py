@@ -15,7 +15,7 @@ np.random.seed(seed)
 torch.manual_seed(seed)
 torch.random.manual_seed(seed)
 if torch.cuda.is_available():
-        torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
 
 def cross_entropy_one_hot(input, target):
     _, labels = target.max(dim=1)

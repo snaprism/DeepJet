@@ -15,13 +15,13 @@ np.random.seed(seed)
 torch.manual_seed(seed)
 torch.random.manual_seed(seed)
 if torch.cuda.is_available():
-	torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
 
 def cross_entropy_one_hot(input, target):
     _, labels = target.max(dim=1)
     return nn.CrossEntropyLoss()(input, labels)
 
-num_epochs = 3 #30
+num_epochs = 30
 
 lr_epochs = max(1, int(num_epochs * 0.3))
 lr_rate = 0.01 ** (1.0 / lr_epochs)

@@ -3,6 +3,13 @@ import torch.nn as nn
 import numpy as np
 import copy
 
+seed = 0
+np.random.seed(seed)
+torch.manual_seed(seed)
+torch.random.manual_seed(seed)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed(seed)
+
 def tile(a, dim, n_tile):
     init_dim = a.size(dim)
     repeat_idx = [1] * a.dim()

@@ -5,23 +5,23 @@ echo "############################## END OF BASH LOG ###########################
 
 ### training
 #export input_dir=/net/scratch_cms3a/ajung/deepjet/data/medium_sample/dataCollection.djcdc
-#export output_dir=/net/scratch_cms3a/ajung/deepjet/results/new_pgd
-#export adv=_pgd1
+#export output_dir=/net/scratch_cms3a/ajung/deepjet/results/new_fgsm_
+#export adv=_fgsm
 #python3 pytorch/train_DeepFlavour$adv.py $input_dir $output_dir
 
 
 ### prediction
-#export checkpoint_dir=/net/scratch_cms3a/ajung/deepjet/results/fgsm/checkpoint_epoch_1.pth
-#export traindata_dir=/net/scratch_cms3a/ajung/deepjet/results/fgsm/trainsamples.djcdc
+#export checkpoint_dir=/net/scratch_cms3a/ajung/deepjet/results/new_fgsm_/checkpoint_epoch_2.pth
+#export traindata_dir=/net/scratch_cms3a/ajung/deepjet/results/new_fgsm_/trainsamples.djcdc
 #export sample_dir=one_sample_lxportal.txt
-#export output_dir=/net/scratch_cms3a/ajung/deepjet/results/new_pgd/fgsm_model
+#export output_dir=/net/scratch_cms3a/ajung/deepjet/results/new_fgsm_/fgsm_model
 #python3 pytorch/predict_pytorch.py DeepJet_Run2 $checkpoint_dir $traindata_dir $sample_dir $output_dir
 
 # -attack PGD -att_magnitude 0.01 -restrict_impact 0.2 -pgd_loops 5
 
 
 ### evaluation
-#python3 scripts/plot_loss_lxportal.py
+python3 scripts/plot_loss_lxportal.py
 python3 scripts/plot_roc_lxportal.py
 
 

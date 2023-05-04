@@ -4,6 +4,12 @@ import itertools as it
 from collections import defaultdict
 from torch.optim.optimizer import Optimizer, required
 
+seed = 0
+torch.manual_seed(seed)
+torch.random.manual_seed(seed)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed(seed)
+
 # https://github.com/lonePatient/lookahead_pytorch/blob/1055128057408fe8533ffa30654551a317f07f0a/optimizer.py
 class Lookahead(Optimizer):
     '''
