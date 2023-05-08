@@ -323,7 +323,6 @@ def pgd_attack(epsilon=1e-2, pgd_loops=-1, sample=None, targets=None, thismodel=
     return glob_adv.detach(), cpf_adv.detach(), npf_adv.detach(), vtx_adv.detach()
 '''
 def pgd_attack(epsilon=1e-2, pgd_loops=-1, sample=None, targets=None, thismodel=None, thiscriterion=None, reduced=True, dev=torch.device("cuda"), restrict_impact=-1, epsilon_factors=True):
-    pgd_loops = 1
     if epsilon == 0:
         return sample
     
@@ -339,13 +338,7 @@ def pgd_attack(epsilon=1e-2, pgd_loops=-1, sample=None, targets=None, thismodel=
         epsilon_vtx  = 1.0
     
     glob, cpf, npf, vtx = sample
-    '''
-    glob    = glob.clone().detach().to(dev)
-    cpf     = cpf.clone().detach().to(dev)
-    npf     = npf.clone().detach().to(dev)
-    vtx     = vtx.clone().detach().to(dev)
-    targets = targets.clone().detach().to(dev)
-    '''
+
     adv_glob = glob.clone().detach().to(dev)
     adv_cpf  = cpf.clone().detach().to(dev)
     adv_npf  = npf.clone().detach().to(dev)
@@ -367,12 +360,7 @@ def pgd_attack(epsilon=1e-2, pgd_loops=-1, sample=None, targets=None, thismodel=
         
         thismodel.zero_grad()
         loss.backward()
-        '''
-        grad_glob = torch.autograd.grad(loss, adv_glob, retain_graph=False, create_graph=False)[0]
-        grad_cpf  = torch.autograd.grad(loss, adv_cpf, retain_graph=False, create_graph=False)[0]
-        grad_npf  = torch.autograd.grad(loss, adv_npf, retain_graph=False, create_graph=False)[0]
-        grad_vtx  = torch.autograd.grad(loss, adv_vtx, retain_graph=False, create_graph=False)[0]
-        '''
+
         with torch.no_grad():
             grad_glob = adv_glob.grad.detach().sign()
             grad_cpf  = adv_cpf.grad.detach().sign()
@@ -384,20 +372,15 @@ def pgd_attack(epsilon=1e-2, pgd_loops=-1, sample=None, targets=None, thismodel=
             adv_npf  += epsilon * epsilon_npf  * grad_npf
             adv_vtx  += epsilon * epsilon_vtx  * grad_vtx
             '''
-            delta_glob = torch.clamp(adv_glob - glob, min=-epsilon * epsilon_factors["glob"], max=sepsilon * epsilon_factors["glob"])
-            delta_cpf  = torch.clamp(adv_cpf - cpf, min=-epsilon * epsilon_factors["cpf"], max=sepsilon * epsilon_factors["cpf"])
-            delta_npf  = torch.clamp(adv_npf - npf, min=-epsilon * epsilon_factors["npf"], max=sepsilon * epsilon_factors["npf"])
-            delta_vtx  = torch.clamp(adv_vtx - vtx, min=-epsilon * epsilon_factors["vtx"], max=sepsilon * epsilon_factors["vtx"])
+            delta_glob = torch.clamp(adv_glob - glob, min=-epsilon * epsilon_factors["glob"], max=epsilon * epsilon_factors["glob"])
+            delta_cpf  = torch.clamp(adv_cpf - cpf, min=-epsilon * epsilon_factors["cpf"], max=epsilon * epsilon_factors["cpf"])
+            delta_npf  = torch.clamp(adv_npf - npf, min=-epsilon * epsilon_factors["npf"], max=epsilon * epsilon_factors["npf"])
+            delta_vtx  = torch.clamp(adv_vtx - vtx, min=-epsilon * epsilon_factors["vtx"], max=epsilon * epsilon_factors["vtx"])
 
             adv_glob = glob + delta_glob
             adv_cpf  = cpf  + delta_cpf
             adv_npf  = npf  + delta_npf
             adv_vtx  = vtx  + delta_vtx
-            
-            adv_glob.detach()
-            adv_cpf.detach()
-            adv_npf.detach()
-            adv_vtx.detach()
             '''
             dx_glob += grad_glob
             dx_cpf  += grad_cpf

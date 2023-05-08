@@ -11,17 +11,29 @@ echo "############################## END OF BASH LOG ###########################
 
 
 ### prediction
-#export checkpoint_dir=/net/scratch_cms3a/ajung/deepjet/results/new_fgsm_/checkpoint_epoch_2.pth
-#export traindata_dir=/net/scratch_cms3a/ajung/deepjet/results/new_fgsm_/trainsamples.djcdc
-#export sample_dir=one_sample_lxportal.txt
-#export output_dir=/net/scratch_cms3a/ajung/deepjet/results/new_fgsm_/fgsm_model
-#python3 pytorch/predict_pytorch.py DeepJet_Run2 $checkpoint_dir $traindata_dir $sample_dir $output_dir
+export checkpoint_dir=/net/scratch_cms3a/ajung/deepjet/results/fgsm/checkpoint_best_loss.pth
+export traindata_dir=/net/scratch_cms3a/ajung/deepjet/results/fgsm/trainsamples.djcdc
+export sample_dir=one_sample_lxportal.txt
+export output_dir=/net/scratch_cms3a/ajung/deepjet/results/fgsm/predict
+python3 pytorch/predict_pytorch.py DeepJet_Run2 $checkpoint_dir $traindata_dir $sample_dir $output_dir
+
+export checkpoint_dir=/net/scratch_cms3a/ajung/deepjet/results/fgsm/checkpoint_best_loss.pth
+export traindata_dir=/net/scratch_cms3a/ajung/deepjet/results/fgsm/trainsamples.djcdc
+export sample_dir=one_sample_lxportal.txt
+export output_dir=/net/scratch_cms3a/ajung/deepjet/results/fgsm/predict_fgsm
+python3 pytorch/predict_pytorch.py DeepJet_Run2 $checkpoint_dir $traindata_dir $sample_dir $output_dir -attack FGSM -att_magnitude 0.01 -restrict_impact 0.2 -pgd_loops 1
+
+export checkpoint_dir=/net/scratch_cms3a/ajung/deepjet/results/fgsm/checkpoint_best_loss.pth
+export traindata_dir=/net/scratch_cms3a/ajung/deepjet/results/fgsm/trainsamples.djcdc
+export sample_dir=one_sample_lxportal.txt
+export output_dir=/net/scratch_cms3a/ajung/deepjet/results/fgsm/predict_pgd_1
+python3 pytorch/predict_pytorch.py DeepJet_Run2 $checkpoint_dir $traindata_dir $sample_dir $output_dir -attack PGD -att_magnitude 0.01 -restrict_impact 0.2 -pgd_loops 1
 
 # -attack PGD -att_magnitude 0.01 -restrict_impact 0.2 -pgd_loops 5
 
 
 ### evaluation
-python3 scripts/plot_loss_lxportal.py
+#python3 scripts/plot_loss_lxportal.py
 python3 scripts/plot_roc_lxportal.py
 
 
