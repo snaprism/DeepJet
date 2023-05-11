@@ -270,3 +270,5 @@ for inputfile in inputdatafiles:
 with open(args.outputDir + "/outfiles.txt","w") as f:
     for l in outputs:
         f.write(l+'\n')
+
+print(f"Finished process {os.getpid()} .")

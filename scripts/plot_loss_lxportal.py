@@ -6,8 +6,8 @@ print(f"This process has the PID {os.getpid()} .")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-models = ["pgd_loops/1/", "pgd_loops/2/", "pgd_loops/3/"]
-adv    = [True, True, True]
+models = ["pgd_clamp/"]
+adv    = [True]
 
 
 def save_loss(model_names, is_adv):
@@ -30,3 +30,5 @@ def save_loss(model_names, is_adv):
         np.save(base_dir + name + f"loss.npy", np.array([train_loss,val_loss]))
 
 save_loss(models, adv)
+
+print(f"Finished process {os.getpid()} .")

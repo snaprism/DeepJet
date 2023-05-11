@@ -6,7 +6,7 @@ import os
 
 print(f"This process has the PID {os.getpid()} .")
 
-predictions = ["fgsm/predict/", "fgsm/predict_fgsm/", "fgsm/predict_pgd_1/"]
+predictions = ["pgd_loops/2/predict/", "pgd_loops/2/predict_pgd_1/", "pgd_loops/2/predict_pgd_2/", "pgd_loops/3/predict/", "pgd_loops/3/predict_pgd_1/", "pgd_loops/3/predict_pgd_2/", "pgd_loops/3/predict_pgd_3/"]
 
 def save_roc(prediction_path):
     base_dir         = "/net/scratch_cms3a/ajung/deepjet/results/"
@@ -57,3 +57,5 @@ def save_roc(prediction_path):
         np.save(output + "CvL.npy", np.stack((x3, y3, auc3)))
         
 save_roc(predictions)
+
+print(f"Finished process {os.getpid()} .")

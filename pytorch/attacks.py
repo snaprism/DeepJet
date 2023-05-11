@@ -371,7 +371,7 @@ def pgd_attack(epsilon=1e-2, pgd_loops=-1, sample=None, targets=None, thismodel=
             adv_cpf  += epsilon * epsilon_cpf  * grad_cpf
             adv_npf  += epsilon * epsilon_npf  * grad_npf
             adv_vtx  += epsilon * epsilon_vtx  * grad_vtx
-            '''
+            
             delta_glob = torch.clamp(adv_glob - glob, min=-epsilon * epsilon_factors["glob"], max=epsilon * epsilon_factors["glob"])
             delta_cpf  = torch.clamp(adv_cpf - cpf, min=-epsilon * epsilon_factors["cpf"], max=epsilon * epsilon_factors["cpf"])
             delta_npf  = torch.clamp(adv_npf - npf, min=-epsilon * epsilon_factors["npf"], max=epsilon * epsilon_factors["npf"])
@@ -381,7 +381,7 @@ def pgd_attack(epsilon=1e-2, pgd_loops=-1, sample=None, targets=None, thismodel=
             adv_cpf  = cpf  + delta_cpf
             adv_npf  = npf  + delta_npf
             adv_vtx  = vtx  + delta_vtx
-            '''
+            
             dx_glob += grad_glob
             dx_cpf  += grad_cpf
             dx_npf  += grad_npf
