@@ -6,7 +6,7 @@ import os
 
 print(f"This process has the PID {os.getpid()} .")
 
-predictions = ["pgd_loops/2/predict/", "pgd_loops/2/predict_pgd_1/", "pgd_loops/2/predict_pgd_2/", "pgd_loops/3/predict/", "pgd_loops/3/predict_pgd_1/", "pgd_loops/3/predict_pgd_2/", "pgd_loops/3/predict_pgd_3/"]
+predictions = ["nominal/predict_pgd_2/", "nominal/predict_pgd_3/", "nominal/predict_pgd_4/", "nominal/predict_pgd_5/"]
 
 def save_roc(prediction_path):
     base_dir         = "/net/scratch_cms3a/ajung/deepjet/results/"
