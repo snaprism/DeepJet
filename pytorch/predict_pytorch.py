@@ -64,9 +64,9 @@ def test_loop(dataloader, model, nbatches, pbar, attack = "", att_magnitude = -1
     predictions = 0
     
     glob_adv_liste = []
-    cpf_adv_liste = []
-    npf_adv_liste = []
-    vtx_adv_liste = []
+    cpf_adv_liste  = []
+    npf_adv_liste  = []
+    vtx_adv_liste  = []
     #with torch.no_grad():
     for b in range(nbatches):
 
@@ -129,7 +129,8 @@ def test_loop(dataloader, model, nbatches, pbar, attack = "", att_magnitude = -1
                                                thismodel=model,
                                                thiscriterion=loss_fn,
                                                restrict_impact=restrict_impact,
-                                               epsilon_factors=epsilon_factors)
+                                               epsilon_factors=epsilon_factors,
+                                               batch_index=b)
 
 
 
@@ -137,6 +138,8 @@ def test_loop(dataloader, model, nbatches, pbar, attack = "", att_magnitude = -1
         #cpf_adv_liste.append(cpf.detach().cpu().numpy())
         #npf_adv_liste.append(npf.detach().cpu().numpy())
         #vtx_adv_liste.append(vtx.detach().cpu().numpy())
+        
+        #continue
         # Compute prediction
         pred = nn.Softmax(dim=1)(model(glob,cpf,npf,vtx)).cpu().detach().numpy()
         if b == 0:
@@ -146,11 +149,11 @@ def test_loop(dataloader, model, nbatches, pbar, attack = "", att_magnitude = -1
         desc = 'Predicting probs : '
         pbar.set_description(desc)
         pbar.update(1)
-    
-    #np.save("/eos/home-a/aljung/data/deepjet/one_sample/glob_pgd_new_nonoise.npy", np.asarray(glob_adv_liste))
-    #np.save("/eos/home-a/aljung/data/deepjet/one_sample/cpf_pgd_new_nonoise.npy", np.asarray(cpf_adv_liste))
-    #np.save("/eos/home-a/aljung/data/deepjet/one_sample/npf_pgd_new_nonoise.npy", np.asarray(npf_adv_liste))
-    #np.save("/eos/home-a/aljung/data/deepjet/one_sample/vtx_pgd_new_nonoise.npy", np.asarray(vtx_adv_liste))
+
+    #np.save("/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/nominal_fgsm/glob_batch_.npy", np.asarray(glob_adv_liste))
+    #np.save("/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/nominal_fgsm/cpf_batch_.npy", np.asarray(cpf_adv_liste))
+    #np.save("/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/nominal_fgsm/npf_batch_.npy", np.asarray(npf_adv_liste))
+    #np.save("/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/nominal_fgsm/vtx_batch_.npy", np.asarray(vtx_adv_liste))
     
     return predictions
 

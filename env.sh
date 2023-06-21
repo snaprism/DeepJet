@@ -1,4 +1,3 @@
-
 #! /bin/bash
 
 export DJSUBPACKAGE=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P)
@@ -13,4 +12,3 @@ export PATH=$DJSUBPACKAGE/scripts:$PATH
 
 export LD_LIBRARY_PATH=$DJSUBPACKAGE/modules/compiled:$LD_LIBRARY_PATH
 export PYTHONPATH=$DJSUBPACKAGE/modules/compiled:$PYTHONPATH
-

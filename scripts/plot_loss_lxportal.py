@@ -2,6 +2,7 @@ import numpy as np
 import torch
 import os
 
+
 print(f"This process has the PID {os.getpid()} .")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -29,6 +30,7 @@ def save_loss(model_names, is_adv):
             val_loss.append(checkpoint["val_loss"])
         np.save(base_dir + name + f"loss.npy", np.array([train_loss,val_loss]))
 
+        
 save_loss(models, adv)
 
 print(f"Finished process {os.getpid()} .")

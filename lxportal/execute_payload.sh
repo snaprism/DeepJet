@@ -11,11 +11,11 @@ echo "############################## END OF BASH LOG ###########################
 
 
 ### prediction
-#export checkpoint_dir=/net/scratch_cms3a/ajung/deepjet/results/nominal/checkpoint_best_loss.pth
-#export traindata_dir=/net/scratch_cms3a/ajung/deepjet/results/nominal/trainsamples.djcdc
-#export sample_dir=one_sample_lxportal.txt
-#export output_dir=/net/scratch_cms3a/ajung/deepjet/results/nominal/predict
-#python3 pytorch/predict_pytorch.py DeepJet_Run2 $checkpoint_dir $traindata_dir $sample_dir $output_dir
+export checkpoint_dir=/net/scratch_cms3a/ajung/deepjet/results/nominal/checkpoint_best_loss.pth
+export traindata_dir=/net/scratch_cms3a/ajung/deepjet/results/nominal/trainsamples.djcdc
+export sample_dir=one_sample_lxportal.txt
+export output_dir=/net/scratch_cms3a/ajung/deepjet/results/nominal/predict_test
+python3 pytorch/predict_pytorch.py DeepJet_Run2 $checkpoint_dir $traindata_dir $sample_dir $output_dir -attack PGD -att_magnitude 0.01 -restrict_impact 0.2 -pgd_loops 5
 
 # -attack PGD -att_magnitude 0.01 -restrict_impact 0.2 -pgd_loops 5
 
