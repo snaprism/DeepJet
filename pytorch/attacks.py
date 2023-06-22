@@ -400,10 +400,10 @@ def pgd_attack(epsilon=1e-2, pgd_loops=-1, sample=None, targets=None, thismodel=
             dx_npf  += grad_npf
             dx_vtx  += grad_vtx
             
-            np.save(f"/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/per_loop_new/glob_{batch_index}_{l}.npy", adv_glob.detach().cpu().numpy())
-            np.save(f"/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/per_loop_new/cpf_{batch_index}_{l}.npy", adv_cpf.detach().cpu().numpy())
-            np.save(f"/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/per_loop_new/npf_{batch_index}_{l}.npy", adv_npf.detach().cpu().numpy())
-            np.save(f"/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/per_loop_new/vtx_{batch_index}_{l}.npy", adv_vtx.detach().cpu().numpy())
+            #np.save(f"/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/per_loop_new/glob_{batch_index}_{l}.npy", adv_glob.detach().cpu().numpy())
+            #np.save(f"/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/per_loop_new/cpf_{batch_index}_{l}.npy", adv_cpf.detach().cpu().numpy())
+            #np.save(f"/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/per_loop_new/npf_{batch_index}_{l}.npy", adv_npf.detach().cpu().numpy())
+            #np.save(f"/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/per_loop_new/vtx_{batch_index}_{l}.npy", adv_vtx.detach().cpu().numpy())
     
     with torch.no_grad():
         if reduced:
@@ -448,9 +448,9 @@ def pgd_attack(epsilon=1e-2, pgd_loops=-1, sample=None, targets=None, thismodel=
             adv_npf  = torch.clamp(adv_npf,  min=npf - restrict_impact*torch.abs(npf),    max=npf + restrict_impact*torch.abs(npf))
             adv_vtx  = torch.clamp(adv_vtx,  min=vtx - restrict_impact*torch.abs(vtx),    max=vtx + restrict_impact*torch.abs(vtx))
     
-    np.save(f"/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/per_loop_new/glob_{batch_index}_-1.npy", adv_glob.detach().cpu().numpy())
-    np.save(f"/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/per_loop_new/cpf_{batch_index}_-1.npy", adv_cpf.detach().cpu().numpy())
-    np.save(f"/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/per_loop_new/npf_{batch_index}_-1.npy", adv_npf.detach().cpu().numpy())
-    np.save(f"/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/per_loop_new/vtx_{batch_index}_-1.npy", adv_vtx.detach().cpu().numpy())
+    #np.save(f"/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/per_loop_new/glob_{batch_index}_-1.npy", adv_glob.detach().cpu().numpy())
+    #np.save(f"/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/per_loop_new/cpf_{batch_index}_-1.npy", adv_cpf.detach().cpu().numpy())
+    #np.save(f"/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/per_loop_new/npf_{batch_index}_-1.npy", adv_npf.detach().cpu().numpy())
+    #np.save(f"/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/per_loop_new/vtx_{batch_index}_-1.npy", adv_vtx.detach().cpu().numpy())
 
     return adv_glob.detach(), adv_cpf.detach(), adv_npf.detach(), adv_vtx.detach()
