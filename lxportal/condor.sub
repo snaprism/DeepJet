@@ -1,0 +1,19 @@
+executable = /home/home1/institut_3a/ajung/work/repositories/DeepJet/lxportal/start_deepjet_condor.sh
+
+should_transfer_files = YES
+
+error  = err.$(ClusterId).$(ProcId)
+output = out.$(ClusterId).$(ProcId)
+log    = log.$(ClusterId).$(ProcId)
+
+request_memory    = 30000
+request_GPUMemory = 40000
+#request_GPUs      = 1
+
+initialdir =/net/scratch_cms3a/ajung/deepjet/logs
+
+requirements = (OpSys == "LINUX") && (Arch == "X86_64")
+
+#arguments = arg1 arg2 arg3
+
+queue

@@ -1,12 +1,13 @@
-from definitions import epsilons_per_feature, vars_per_candidate
-from DeepJetCore.DataCollection import DataCollection
 from __future__ import absolute_import
 from __future__ import print_function
+from __future__ import division
+
+from definitions import epsilons_per_feature, vars_per_candidate
+from DeepJetCore.DataCollection import DataCollection
 from argparse import ArgumentParser
 from DeepJetCore.DJCLosses import *
 from DeepJetCore.DJCLayers import *
 from torch.optim import Adam, SGD
-from __future__ import division
 import torch.nn.functional as F
 from pdb import set_trace
 from tqdm import tqdm

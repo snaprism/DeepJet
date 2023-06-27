@@ -54,7 +54,7 @@ train = training_base(
 train.train_data.maxFilesOpen = 1
 
 attack = "FGSM"
-att_magnitude = 0.01
+att_magnitude = 0.05
 restrict_impact = -1
 pgd_loops = -1
 
