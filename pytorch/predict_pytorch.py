@@ -9,12 +9,14 @@ from argparse import ArgumentParser
 from pytorch_deepjet import DeepJet
 from torch.optim import Adam, SGD
 import torch.nn.functional as F
+from IPython import embed
 import torch.nn as nn
 from tqdm import tqdm
 import numpy as np
 import tempfile
 import atexit
 import torch
+import sys
 import imp
 import os
 
@@ -68,12 +70,17 @@ parser.add_argument(
     "-pgd_loops", help="define number of iterations in the PGD attack", default="-1"
 )
 
+parser.add_argument(
+    "-jetfool_loops", help="define number of iterations in the jetfool attack", default="5"
+)
+
 args = parser.parse_args()
 batchsize = int(args.b)
 attack = args.attack
 att_magnitude = float(args.att_magnitude)
 restrict_impact = float(args.restrict_impact)
 pgd_loops = int(args.pgd_loops)
+jetfool_loops = int(args.jetfool_loops)
 
 inputdatafiles = []
 inputdir = None
@@ -113,6 +120,7 @@ def test_loop(
     cpf_adv_liste = []
     npf_adv_liste = []
     vtx_adv_liste = []
+    y_liste = []
     # with torch.no_grad():
     for b in range(nbatches):
         features_list, truth_list = next(dataloader)
@@ -191,11 +199,17 @@ def test_loop(
                 batch_index=b,
             )
 
-        # glob_adv_liste.append(glob.detach().cpu().numpy())
-        # cpf_adv_liste.append(cpf.detach().cpu().numpy())
-        # npf_adv_liste.append(npf.detach().cpu().numpy())
-        # vtx_adv_liste.append(vtx.detach().cpu().numpy())
+        elif attack == "jetfool":
+            sys.path.append("/home/home1/institut_3a/ajung/work/repositories/jetfool")
+            from jetfool import jetfool
+            glob, cpf, npf, vtx = jetfool((glob, cpf, npf, vtx), model, batchsize, device, jetfool_loops, number_classes=6, overshoot=0.02)
 
+        glob_adv_liste.append(glob.detach().cpu().numpy())
+        cpf_adv_liste.append(cpf.detach().cpu().numpy())
+        npf_adv_liste.append(npf.detach().cpu().numpy())
+        vtx_adv_liste.append(vtx.detach().cpu().numpy())
+        y_liste.append(y.detach().cpu().numpy())
+        
         pred = nn.Softmax(dim=1)(model(glob, cpf, npf, vtx)).cpu().detach().numpy()
         if b == 0:
             predictions = pred
@@ -204,24 +218,28 @@ def test_loop(
         desc = "Predicting probs : "
         pbar.set_description(desc)
         pbar.update(1)
-    """
+
     np.save(
-        "/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/nominal_fgsm/glob_batch_.npy",
+        "/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/nominal_jetfool/glob_batch.npy",
         np.asarray(glob_adv_liste),
     )
     np.save(
-        "/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/nominal_fgsm/cpf_batch_.npy",
+        "/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/nominal_jetfool/cpf_batch.npy",
         np.asarray(cpf_adv_liste),
     )
     np.save(
-        "/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/nominal_fgsm/npf_batch_.npy",
+        "/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/nominal_jetfool/npf_batch.npy",
         np.asarray(npf_adv_liste),
     )
     np.save(
-        "/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/nominal_fgsm/vtx_batch_.npy",
+        "/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/nominal_jetfool/vtx_batch.npy",
         np.asarray(vtx_adv_liste),
     )
-    """
+    np.save(
+        "/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/nominal_jetfool/y_batch.npy",
+        np.asarray(y_liste),
+    )
+
     return predictions
 
 

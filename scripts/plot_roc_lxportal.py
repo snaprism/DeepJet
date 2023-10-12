@@ -7,10 +7,30 @@ import os
 print(f"This process has the PID {os.getpid()} .")
 
 predictions = [
+    "nominal/predict/",
+    "nominal/predict_fgsm/",
+    "nominal/predict_pgd_1/",
     "nominal/predict_pgd_2/",
     "nominal/predict_pgd_3/",
     "nominal/predict_pgd_4/",
     "nominal/predict_pgd_5/",
+    "fgsm/predict/",
+    "fgsm/predict_fgsm/",
+    "pgd/1/predict/",
+    "pgd/1/predict_fgsm/",
+    "pgd/1/predict_pgd_1/",
+    "pgd/2/predict/",
+    "pgd/2/predict_fgsm/",
+    "pgd/2/predict_pgd_2/",
+    "pgd/3/predict/",
+    "pgd/3/predict_fgsm/",
+    "pgd/3/predict_pgd_3/",
+    "pgd/4/predict/",
+    "pgd/4/predict_fgsm/",
+    "pgd/4/predict_pgd_4/",
+    "pgd/5/predict/",
+    "pgd/5/predict_fgsm/",
+    "pgd/5/predict_pgd_5/",
 ]
 
 

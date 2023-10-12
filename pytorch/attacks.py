@@ -609,10 +609,10 @@ def pgd_attack(
                 max=epsilon * epsilon_vtx,
             )
 
-            adv_glob += delta_glob
-            adv_cpf += delta_cpf
-            adv_npf += delta_npf
-            adv_vtx += delta_vtx
+            adv_glob -= delta_glob
+            adv_cpf -= delta_cpf
+            adv_npf -= delta_npf
+            adv_vtx -= delta_vtx
 
             dx_glob += grad_glob
             dx_cpf += grad_cpf
