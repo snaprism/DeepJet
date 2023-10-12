@@ -202,7 +202,7 @@ def test_loop(
         elif attack == "jetfool":
             sys.path.append("/home/home1/institut_3a/ajung/work/repositories/jetfool")
             from jetfool import jetfool
-            glob, cpf, npf, vtx = jetfool((glob, cpf, npf, vtx), model, batchsize, device, jetfool_loops, number_classes=6, overshoot=0.02)
+            glob, cpf, npf, vtx = jetfool((glob, cpf, npf, vtx), model, batchsize, device, jetfool_loops, restrict_impact, number_classes=6, overshoot=0.02)
 
         glob_adv_liste.append(glob.detach().cpu().numpy())
         cpf_adv_liste.append(cpf.detach().cpu().numpy())
