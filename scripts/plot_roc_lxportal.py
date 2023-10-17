@@ -8,7 +8,7 @@ print(f"This process has the PID {os.getpid()} .")
 
 predictions = [
     "nominal/predict/",
-    "nominal/predict_fgsm/",
+    "nominal/predict_pgd_1/",
     "nominal/predict_jetfool/",
 ]
 

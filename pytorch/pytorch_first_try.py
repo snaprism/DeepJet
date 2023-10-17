@@ -1,3 +1,5 @@
+# Alter line 439f to force continue training
+
 from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import division
@@ -434,8 +436,8 @@ class training_base(object):
         isNewTraining = True
         if os.path.isdir(self.outputDir):
             if not (resumeSilently or recreate_silently):
-                #var = input('output dir exists. To recover a training, please type "yes"\n')
-                var = "yes"
+                var = input('output dir exists. To recover a training, please type "yes"\n')
+                # var = "yes"
                 if not var == "yes":
                     raise Exception("output directory must not exist yet")
                 isNewTraining = False

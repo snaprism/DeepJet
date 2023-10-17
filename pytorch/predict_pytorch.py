@@ -9,7 +9,6 @@ from argparse import ArgumentParser
 from pytorch_deepjet import DeepJet
 from torch.optim import Adam, SGD
 import torch.nn.functional as F
-from IPython import embed
 import torch.nn as nn
 from tqdm import tqdm
 import numpy as np
@@ -116,11 +115,11 @@ def test_loop(
 ):
     predictions = 0
 
-    glob_adv_liste = []
-    cpf_adv_liste = []
-    npf_adv_liste = []
-    vtx_adv_liste = []
-    y_liste = []
+    # glob_adv_liste = []
+    # cpf_adv_liste = []
+    # npf_adv_liste = []
+    # vtx_adv_liste = []
+    # y_liste = []
     # with torch.no_grad():
     for b in range(nbatches):
         features_list, truth_list = next(dataloader)
@@ -204,11 +203,11 @@ def test_loop(
             from jetfool import jetfool
             glob, cpf, npf, vtx = jetfool((glob, cpf, npf, vtx), model, batchsize, device, jetfool_loops, restrict_impact, number_classes=6, overshoot=0.02)
 
-        glob_adv_liste.append(glob.detach().cpu().numpy())
-        cpf_adv_liste.append(cpf.detach().cpu().numpy())
-        npf_adv_liste.append(npf.detach().cpu().numpy())
-        vtx_adv_liste.append(vtx.detach().cpu().numpy())
-        y_liste.append(y.detach().cpu().numpy())
+        # glob_adv_liste.append(glob.detach().cpu().numpy())
+        # cpf_adv_liste.append(cpf.detach().cpu().numpy())
+        # npf_adv_liste.append(npf.detach().cpu().numpy())
+        # vtx_adv_liste.append(vtx.detach().cpu().numpy())
+        # y_liste.append(y.detach().cpu().numpy())
         
         pred = nn.Softmax(dim=1)(model(glob, cpf, npf, vtx)).cpu().detach().numpy()
         if b == 0:
@@ -218,7 +217,7 @@ def test_loop(
         desc = "Predicting probs : "
         pbar.set_description(desc)
         pbar.update(1)
-
+    """
     np.save(
         "/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/nominal_jetfool/glob_batch.npy",
         np.asarray(glob_adv_liste),
@@ -239,7 +238,7 @@ def test_loop(
         "/net/scratch_cms3a/ajung/deepjet/data/one_sample/numpy/nominal_jetfool/y_batch.npy",
         np.asarray(y_liste),
     )
-
+    """
     return predictions
 
 

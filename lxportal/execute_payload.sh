@@ -18,6 +18,7 @@ export output_dir=/net/scratch_cms3a/ajung/deepjet/results/nominal/predict_jetfo
 python3 /.automount/home/home__home1/institut_3a/ajung/work/repositories/DeepJet/pytorch/predict_pytorch.py DeepJet_Run2 $checkpoint_dir $traindata_dir $sample_dir $output_dir -attack jetfool -jetfool_loops 1 -restrict_impact 0.2
 
 # -attack PGD -att_magnitude 0.01 -restrict_impact 0.2 -pgd_loops 5
+# -attack jetfool -jetfool_loops 1 -restrict_impact 0.2
 
 
 ### evaluation
